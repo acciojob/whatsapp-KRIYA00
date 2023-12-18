@@ -31,9 +31,11 @@ public class WhatsappRepository {
     }
     public String  createUser(String name, String mobile) throws Exception
     {
+        //If the mobile number exists in database, throw "User already exists" exception
+        //Otherwise, create the user and return "SUCCESS"
         if(userMobile.contains(mobile))
         {
-            throw new Exception("User already exists!!");
+            throw new Exception("User already exists");
         }
         else
         {
@@ -81,8 +83,11 @@ public class WhatsappRepository {
         return messageId;
     }
     public int sendMessage(Message message, User sender, Group group) throws Exception {
+        //Throw "Group does not exist" if the mentioned group does not exist
+        //Throw "You are not allowed to send message" if the sender is not a member of the group
+        //If the message is sent successfully, return the final number of messages in that group.
         if(!groupUserMap.containsKey(group))
-            throw new Exception("Group doesn't exists");
+            throw new Exception("Group does not exist");
         else {
             boolean flag=false;
             for(User user:groupUserMap.get(group))
@@ -94,7 +99,7 @@ public class WhatsappRepository {
                 }
             }
             if(flag==false)
-                throw new Exception("Sender is not member of group");
+                throw new Exception("You are not allowed to send message");
         }
         List<Message>messages;
         if(groupMessageMap.get(group)==null)
@@ -115,13 +120,18 @@ return groupMessageMap.get(group).size();
     }
 
     public String changeAdmin(User approver, User user, Group group) throws Exception {
+        //Throw "Group does not exist" if the mentioned group does not exist
+        //Throw "Approver does not have rights" if the approver is not the current admin of the group
+        //Throw "User is not a participant" if the user is not a part of the group
+        //Change the admin of the group to "user" and return "SUCCESS". Note that at one time there is only one admin and the admin rights are transferred from approver to user.
+
         if(!adminMap.containsKey(group)) {
-            throw new Exception("Group doesn't exist");
+            throw new Exception( "Group does not exist");
         }
         else
         {
             if (adminMap.get(group) != approver)
-                throw new Exception("Approver isn't current admin!!");
+                throw new Exception("Approver does not have rights");
             boolean flag=false;
              for(User user1:groupUserMap.get(group))
              {
@@ -130,7 +140,7 @@ return groupMessageMap.get(group).size();
 
              }
              if(flag==false)
-                 throw new Exception("User doesn't exist");
+                 throw new Exception("User is not a participant");
              adminMap.put(group,user);
            return "SUCCESS";
         }
